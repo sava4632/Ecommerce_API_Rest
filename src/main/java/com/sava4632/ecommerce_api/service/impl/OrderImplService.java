@@ -37,7 +37,7 @@ public class OrderImplService implements IOrderService{
     public Order save(OrderDto orderDto) {
         Order order = Order.builder()
                 .id(orderDto.getId())
-                .user(orderDto.getUser())
+                .userId(orderDto.getUserId())
                 .product(orderDto.getProduct())
                 .quantity(orderDto.getQuantity())
                 .orderDate(orderDto.getOrderDate())

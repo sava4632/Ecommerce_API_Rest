@@ -10,5 +10,4 @@ public class EcommerceApiApplication {
 		SpringApplication.run(EcommerceApiApplication.class, args);
 		System.out.println("Hello World");
 	}
-
 }

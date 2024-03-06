@@ -27,9 +27,10 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    //@ManyToOne
+    //@JoinColumn(name = "user_id")
+    @Column(name = "user_id")
+    private Integer userId;
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;

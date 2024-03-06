@@ -3,7 +3,6 @@ package com.sava4632.ecommerce_api.model.dto;
 import java.util.Date;
 
 import com.sava4632.ecommerce_api.model.entity.Product;
-import com.sava4632.ecommerce_api.model.entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +17,7 @@ import lombok.ToString;
 @Builder
 public class OrderDto {
     private Integer id;
-    private User user;
+    private Integer userId;
     private Product product;
     private Integer quantity;
     private Date orderDate;
