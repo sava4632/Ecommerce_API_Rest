@@ -46,25 +46,35 @@ public class OrderImplService implements IOrderService{
         return orderDao.save(order);
     }
 
+    /*
+     * Retrieves an order from the database by its id.
+     * @param id the id of the order to retrieve.
+     * @return the order if it exists, null otherwise.
+     */
     @Transactional(readOnly = true)
     @Override
     public Order findById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return orderDao.findById(id).orElse(null);
     }
 
+    /*
+     * Deletes an order from the database.
+     */
     @Transactional
     @Override
-    public void delete(OrderDto orderDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public void delete(Order order) {
+        orderDao.delete(order);
     }
 
+    /**
+     * Checks if an order exists in the database.
+     * @param id the id of the order to check.
+     * @return true if the order exists, false otherwise.
+     */
     @Transactional(readOnly = true)
     @Override
     public boolean existsById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+        return orderDao.existsById(id);
     }
 
     @Transactional(readOnly = true)

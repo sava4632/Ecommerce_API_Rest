@@ -98,7 +98,7 @@ public class ProductController {
             productUpdate = productService.save(productDto);
 
             return new ResponseEntity<>(MessageResponse.builder()
-                    .message("Product created successfully")
+                    .message("Product updated successfully")
                     .data(ProductDto.builder()
                         .id(productUpdate.getId())
                         .name(productUpdate.getName())

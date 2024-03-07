@@ -7,18 +7,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sava4632.ecommerce_api.model.dto.OrderDto;
 import com.sava4632.ecommerce_api.model.entity.Order;
+import com.sava4632.ecommerce_api.model.entity.Product;
 import com.sava4632.ecommerce_api.model.payload.MessageResponse;
 import com.sava4632.ecommerce_api.service.impl.OrderImplService;
 import com.sava4632.ecommerce_api.service.impl.ProductImplService;
 import com.sava4632.ecommerce_api.service.impl.UserImplService;
+
 
 @RestController
 @RequestMapping("api/v1/")
@@ -53,8 +58,13 @@ public class OrderController {
             , HttpStatus.OK);
     }
 
+    /*
+     * This endpoint creates multiple orders in the database.
+     * The user id, product ids, and quantities are passed as request parameters.
+     */
     @PostMapping("order")
-    public ResponseEntity<?> create(@RequestParam("userId") Integer userId, @RequestParam("productIds") List<Integer> productIds, @RequestParam("quantities") List<Integer> quantities){
+    public ResponseEntity<?> create(@RequestParam("userId") Integer userId, @RequestParam("productIds") List<Integer> productIds, 
+        @RequestParam("quantities") List<Integer> quantities){
         List<OrderDto> ordersSaved = new ArrayList<>();
         try {
             // Check if the user exists in the database.
@@ -97,6 +107,103 @@ public class OrderController {
                     .build()
                 , HttpStatus.CREATED);
 
+        } catch (DataAccessException exDt) {
+            return new ResponseEntity<>(MessageResponse.builder()
+                    .message(exDt.getMessage())
+                    .data(null)
+                    .build()
+                , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*
+     * This endpoint updates an order in the database.
+     * The order id, user id, product id, and quantity are passed as request parameters.
+     */
+    @PutMapping("order/{orderId}")
+    public ResponseEntity<?> update(@PathVariable Integer orderId, @RequestParam("userId") Integer userId, @RequestParam("productId") 
+        Integer productId, @RequestParam("quantity") Integer quantity){
+        
+        Order orderUpdate = null;
+        try {
+            Order order = orderService.findById(orderId);
+            Product product = productService.findById(productId);
+            // Check if the order exists in the database.
+            if (order == null) {
+                return new ResponseEntity<>(MessageResponse.builder()
+                        .message("Order not found")
+                        .data(null)
+                        .build()
+                    , HttpStatus.NOT_FOUND);
+            }else if (order.getUserId() != userId) { // Check if the order is associated with the user.
+                return new ResponseEntity<>(MessageResponse.builder()
+                        .message("Order not associated with user")
+                        .data(null)
+                        .build()
+                    , HttpStatus.NOT_FOUND);
+                
+            }else if (product == null){ // Check if the product exists in the database.
+                return new ResponseEntity<>(MessageResponse.builder()
+                        .message("Product not found")
+                        .data(null)
+                        .build()
+                    , HttpStatus.NOT_FOUND);
+            }
+            
+            // Update the order in the database.
+            orderUpdate = orderService.save(OrderDto.builder()
+                    .id(orderId)
+                    .userId(userId)
+                    .product(product)
+                    .quantity(quantity)
+                    .build());
+            
+            return new ResponseEntity<>(MessageResponse.builder()
+                    .message("Order updated successfully")
+                    .data(OrderDto.builder()
+                        .id(orderUpdate.getId())
+                        .userId(orderUpdate.getUserId())
+                        .product(orderUpdate.getProduct())
+                        .quantity(orderUpdate.getQuantity())
+                        .orderDate(orderUpdate.getOrderDate())
+                        .build())
+                    .build()
+                , HttpStatus.CREATED);
+
+        } catch (DataAccessException exDt) {
+            return new ResponseEntity<>(MessageResponse.builder()
+                    .message(exDt.getMessage())
+                    .data(null)
+                    .build()
+                , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("order/{orderId}")
+    public ResponseEntity<?> delete(@PathVariable Integer orderId, @RequestParam("userId") Integer userId){
+        try {
+            Order orderDelete = orderService.findById(orderId);
+            if (orderDelete == null) { // Check if the order exists in the database.
+                return new ResponseEntity<>(MessageResponse.builder()
+                    .message("Order not found")
+                    .data(null)
+                    .build()
+                , HttpStatus.NOT_FOUND);
+            }else if (orderDelete.getUserId() != userId) { // Check if the order is associated with the user.
+                return new ResponseEntity<>(MessageResponse.builder()
+                    .message("Order not associated with user")
+                    .data(null)
+                    .build()
+                , HttpStatus.NOT_FOUND);
+            }
+
+            orderService.delete(orderDelete);
+
+            return new ResponseEntity<>(MessageResponse.builder()
+                        .message("Order deleted successfully ")
+                        .data(null)
+                        .build()
+                    , HttpStatus.NO_CONTENT);
         } catch (DataAccessException exDt) {
             return new ResponseEntity<>(MessageResponse.builder()
                     .message(exDt.getMessage())

@@ -24,7 +24,7 @@ public interface IOrderService {
     /*
      * Delete the order from the database.
      */
-    void delete(OrderDto orderDto);
+    void delete(Order order);
 
     /*
      * Check if the order exists by id and return a boolean.
