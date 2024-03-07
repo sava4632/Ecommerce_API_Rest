@@ -179,6 +179,10 @@ public class OrderController {
         }
     }
 
+    /*
+     * This endpoint deletes an order from the database.
+     * The order id and user id are passed as request parameters.
+     */
     @DeleteMapping("order/{orderId}")
     public ResponseEntity<?> delete(@PathVariable Integer orderId, @RequestParam("userId") Integer userId){
         try {
@@ -211,5 +215,70 @@ public class OrderController {
                     .build()
                 , HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /*
+     * This endpoint retrieves all orders from the database by user id.
+     * The user id is passed as a request parameter.
+     */
+    @GetMapping("orders/user/{userId}")
+    public ResponseEntity<?> showAllByUserId(@PathVariable Integer userId){
+        List<Order> getList = orderService.findAllByUserId(userId);
+
+        if (getList == null || getList.isEmpty()) { // Check if the orders exist in the database.
+            return new ResponseEntity<>(MessageResponse.builder()
+                .message("There are no records")
+                .data(null)
+                .build() 
+            , HttpStatus.OK);
+        }
+
+        List<OrderDto> orders = new ArrayList<>();
+        for(Order order : getList){ // Add the orders to the list of orders dto to be returned.
+            orders.add(OrderDto.builder()
+                    .id(order.getId())
+                    .userId(order.getUserId())
+                    .product(order.getProduct())
+                    .quantity(order.getQuantity())
+                    .orderDate(order.getOrderDate())
+                    .build());
+        }
+
+        return new ResponseEntity<>(MessageResponse.builder()
+                .message("Orders found")
+                .data(orders)
+                .build()
+            , HttpStatus.OK);
+    }
+
+    @GetMapping("order/{orderId}")
+    public ResponseEntity<?> showById(@PathVariable Integer orderId, @RequestParam("userId") Integer userId){
+        Order order = orderService.findById(orderId);
+
+        if (order == null) { // Check if the order exists in the database.
+            return new ResponseEntity<>(MessageResponse.builder()
+                .message("Order not found")
+                .data(null)
+                .build()
+            , HttpStatus.NOT_FOUND);
+        }else if (order.getUserId() != userId) { // Check if the order is associated with the user.
+            return new ResponseEntity<>(MessageResponse.builder()
+                .message("Order not associated with user")
+                .data(null)
+                .build()
+            , HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(MessageResponse.builder()
+                .message("Order found")
+                .data(OrderDto.builder()
+                    .id(order.getId())
+                    .userId(order.getUserId())
+                    .product(order.getProduct())
+                    .quantity(order.getQuantity())
+                    .orderDate(order.getOrderDate())
+                    .build())
+                .build()
+            , HttpStatus.OK);
     }
 }

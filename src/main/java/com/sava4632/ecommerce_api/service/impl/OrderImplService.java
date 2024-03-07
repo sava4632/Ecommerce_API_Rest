@@ -77,17 +77,12 @@ public class OrderImplService implements IOrderService{
         return orderDao.existsById(id);
     }
 
+    /*
+     * Retrieves all orders from the database by user id.
+     */
     @Transactional(readOnly = true)
     @Override
     public List<Order> findAllByUserId(Integer userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllByUserId'");
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Order> findAllByProductId(Integer productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllByProductId'");
+        return orderDao.findAllByUserId(userId);
     }
 }

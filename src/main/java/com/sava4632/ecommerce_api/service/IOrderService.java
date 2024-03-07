@@ -35,9 +35,4 @@ public interface IOrderService {
      * Find all the orders by user id and return a list of orders.
      */
     List<Order> findAllByUserId(Integer userId);
-
-    /*
-     * Find all the orders by product id and return a list of orders.
-     */
-    List<Order> findAllByProductId(Integer productId);
 }
