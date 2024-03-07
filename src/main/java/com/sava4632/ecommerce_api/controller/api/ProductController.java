@@ -1,5 +1,6 @@
-package com.sava4632.ecommerce_api.controller;
+package com.sava4632.ecommerce_api.controller.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class ProductController {
      */
     @GetMapping("products")
     public ResponseEntity<?> showAll(){
-        List<Product> getList = productService.findAll();
+        List<Product> getList = productService.findAll(); 
 
         if (getList == null || getList.isEmpty()) {
             return new ResponseEntity<>(MessageResponse.builder()
@@ -43,10 +44,21 @@ public class ProductController {
             , HttpStatus.OK);
             
         }
+        
+        List<ProductDto> getListDto = new ArrayList<>();
+        for (Product product : getList) { // Convert the list of products to a list of productDto
+            getListDto.add(ProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .description(product.getDescription())
+                .build());
+        }
+        
 
         return new ResponseEntity<>(MessageResponse.builder()
                 .message("Data found")
-                .data(getList)
+                .data(getListDto)
                 .build()
             , HttpStatus.OK);
     }

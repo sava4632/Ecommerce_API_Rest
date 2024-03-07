@@ -1,5 +1,6 @@
-package com.sava4632.ecommerce_api.controller;
+package com.sava4632.ecommerce_api.controller.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
+    /*
+     * This endpoint is used to get all users from the database.
+     */
     @GetMapping("users")
     public ResponseEntity<?> showAll() {
         List<User> getList = userService.findAll();
@@ -38,12 +42,26 @@ public class UserController {
                 .build(), HttpStatus.OK);
         }
 
+        List<UserDto> getListDto = new ArrayList<>();
+        for (User user : getList) {
+            getListDto.add(UserDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .age(user.getAge())
+                .registrationDate(user.getRegistrationDate())
+                .build());
+        }
+
         return new ResponseEntity<>(MessageResponse.builder()
                 .message("Data found")
-                .data(getList)
+                .data(getListDto)
                 .build(), HttpStatus.OK);
     }
 
+    /*
+     * This endpoint is used to create a new user in the database.
+     */
     @PostMapping("user")
     public ResponseEntity<?> create(@RequestBody UserDto userDto) { // This annotation is used to bind the HTTP request/response body with a domain object in method parameter or return type
         User userSave = null;
@@ -68,6 +86,9 @@ public class UserController {
         }
     }
 
+    /*
+     * This endpoint is used to update a user in the database.
+     */
     @PutMapping("user/{id}")
     public ResponseEntity<?> update(@RequestBody UserDto userDto, @PathVariable Integer id) {
         User userUpdate = null;
@@ -101,6 +122,9 @@ public class UserController {
         }
     }
 
+    /*
+     * This endpoint is used to delete a user in the database.
+     */
     @DeleteMapping("user/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) { // This annotation is used to bind the path variable to a method parameter
         try{
@@ -127,6 +151,9 @@ public class UserController {
         }
     }
 
+    /*
+     * This endpoint is used to get a user from the database by id.
+     */
     @GetMapping("user/{id}")
     public ResponseEntity<?> showById(@PathVariable Integer id) {
         User user = userService.findById(id);

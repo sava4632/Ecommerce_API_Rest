@@ -1,4 +1,4 @@
-package com.sava4632.ecommerce_api.controller;
+package com.sava4632.ecommerce_api.controller.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +51,20 @@ public class OrderController {
             , HttpStatus.OK);
         }
 
+        List<OrderDto> getListDto = new ArrayList<>();
+        for(Order order : getList){ // Add the orders to the list of orders dto to be returned.
+            getListDto.add(OrderDto.builder()
+                    .id(order.getId())
+                    .userId(order.getUserId())
+                    .product(order.getProduct())
+                    .quantity(order.getQuantity())
+                    .orderDate(order.getOrderDate())
+                    .build());
+        }
+
         return new ResponseEntity<>(MessageResponse.builder()
                 .message("Orders found")
-                .data(getList)
+                .data(getListDto)
                 .build()
             , HttpStatus.OK);
     }
@@ -233,9 +244,9 @@ public class OrderController {
             , HttpStatus.OK);
         }
 
-        List<OrderDto> orders = new ArrayList<>();
+        List<OrderDto> getListDto = new ArrayList<>();
         for(Order order : getList){ // Add the orders to the list of orders dto to be returned.
-            orders.add(OrderDto.builder()
+            getListDto.add(OrderDto.builder()
                     .id(order.getId())
                     .userId(order.getUserId())
                     .product(order.getProduct())
@@ -246,7 +257,7 @@ public class OrderController {
 
         return new ResponseEntity<>(MessageResponse.builder()
                 .message("Orders found")
-                .data(orders)
+                .data(getListDto)
                 .build()
             , HttpStatus.OK);
     }
