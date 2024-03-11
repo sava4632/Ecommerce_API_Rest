@@ -14,18 +14,18 @@ import com.sava4632.ecommerce_api.model.entity.Product;
 import com.sava4632.ecommerce_api.service.impl.ProductImplService;
 
 @Controller
-@RequestMapping("web/v1/")
+@RequestMapping("/products")
 public class ProductWebController {
 
     @Autowired
     private ProductImplService productService;
 
-    @GetMapping("products")
-    public String showProducts(Model model) {
-        // Obtener la lista de productos de la base de datos
-        List<Product> productList = productService.findAll(); // Asegúrate de implementar este método
+    @GetMapping({"/", ""})
+    public String showProducts(Model model) { // model is a container for the data to be displayed in the view.
+        List<Product> productList = productService.findAll(); 
         List<ProductDto> productListDto = new ArrayList<>();
         
+        // change the list of products to a list of productDtos
         for (Product product : productList) {
             productListDto.add(ProductDto.builder()
                 .id(product.getId())
@@ -34,10 +34,9 @@ public class ProductWebController {
                 .description(product.getDescription())
                 .build());
         }
-        // Pasar la lista de productos al modelo
-        model.addAttribute("products", productListDto);
+        // add the list of productDtos to the model to be displayed in the view.
+        model.addAttribute("products", productListDto); 
 
-        // Devolver el nombre de la vista (template) que se utilizará para renderizar la página web
-        return "products";
+        return "products"; // this is the name of the view to be displayed.
     }
 }
