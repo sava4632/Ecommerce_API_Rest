@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/")
 public class HomeWebController {
-
+    /**
+     * This endpoint is used to show the index page
+     * @return index page
+     */
     @GetMapping({"", "index"})
     public String showIndex() {
         return "index";
